@@ -89,9 +89,9 @@ class aPub extends Plugin
 	
 	# Outbox
 	#
-	# POST /v1/<username>/outbox
+	# POST /v1/<username>/feed
 	#
-	public function rest_post_v1__username_outbox($params) {
+	public function rest_post_v1__username_feed($params) {
 		$args['username'] = $params['username'];
 
 		if( $this->passes( $args ) ) {
@@ -106,9 +106,28 @@ class aPub extends Plugin
 		}
 	}
 	
-	# Outbox
+	# Get From Outbox
 	#
-	# POST /v1/<username>/outbox
+	# GET /v1/<username>/feed
+	#
+	public function rest_get_v1__username_feed($params) {
+		$args['username'] = $params['username'];
+
+		if( $this->passes( $args ) ) {
+			$status = 200;
+			$data = array();
+			$ar = new AjaxResponse( $status, $data, null );
+			$ar->out();
+		} else {
+			$status = 401;
+			$ar = new AjaxResponse( $status, null, null );
+			$ar->out();
+		}
+	}
+	
+	# Post to Inbox
+	#
+	# POST /v1/<username>/inbox
 	#
 	public function rest_post_v1__username_inbox($params) {
 		$args['username'] = $params['username'];
@@ -125,14 +144,61 @@ class aPub extends Plugin
 		}
 	}
 	
-	public function theme_route_apub_inbox($theme, $params) {
-		$vars = $_GET;
-		$params = array();
+	# Get From Liked
+	#
+	# GET /v1/<username>/liked
+	#
+	public function rest_get_v1__username_liked($params) {
+		$args['username'] = $params['username'];
+
+		if( $this->passes( $args ) ) {
+			$status = 200;
+			$data = array();
+			$ar = new AjaxResponse( $status, $data, null );
+			$ar->out();
+		} else {
+			$status = 401;
+			$ar = new AjaxResponse( $status, null, null );
+			$ar->out();
+		}
 	}
 	
-	public function theme_route_apub_outbox($theme, $params) {
-		$vars = $_GET;
-		$params = array();
+	# Post to Liked
+	#
+	# POST /v1/<username>/liked
+	#
+	public function rest_post_v1__username_liked($params) {
+		$args['username'] = $params['username'];
+
+		if( $this->passes( $args ) ) {
+			$status = 200;
+			$data = array();
+			$ar = new AjaxResponse( $status, $data, null );
+			$ar->out();
+		} else {
+			$status = 401;
+			$ar = new AjaxResponse( $status, null, null );
+			$ar->out();
+		}
+	}
+	
+	# Get From Inbox
+	#
+	# GET /v1/<username>/inbox
+	#
+	public function rest_get_v1__username_inbox($params) {
+		$args['username'] = $params['username'];
+
+		if( $this->passes( $args ) ) {
+			$status = 200;
+			$data = array();
+			$ar = new AjaxResponse( $status, $data, null );
+			$ar->out();
+		} else {
+			$status = 401;
+			$ar = new AjaxResponse( $status, null, null );
+			$ar->out();
+		}
 	}
 	
 	public function theme_route_display_apub_profile($theme, $params) {

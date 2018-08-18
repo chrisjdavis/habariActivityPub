@@ -14,7 +14,7 @@
         "following": "<?php URL::out( 'v1_usernamefollowing', array('username' => $profile->username) ); ?>",
         "followers": "<?php URL::out( 'v1_usernamefollowers', array('username' => $profile->username) ); ?>",
         "inbox": "<?php URL::out( 'v1_usernameinbox', array('username' => $profile->username) ); ?>",
-        "outbox": "<?php URL::out( 'v1_usernameoutbox', array('username' => $profile->username) ); ?>",
+        "outbox": "<?php URL::out( 'v1_usernamefeed', array('username' => $profile->username) ); ?>",
         "preferredUsername": "<?php echo $profile->username; ?>",
         "displayName": "<?php echo $profile->info->displayname; ?>",
         "summary": "<?php echo $profile->info->apub_summary; ?>",
