@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<pluggable type="plugin">
+	<name>ActivityPub for Habari</name>
+	<license url="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License 2.0</license>
+	<author url="https:/chrisjdavis.org">Chris J. Davis</author>
+	<version>1.0</version>
+	<url>https:/chrisjdavis.org</url>
+	<description><![CDATA[The ActivityPub protocol is a decentralized social networking protocol based upon the ActivityStreams 2.0 data format. It provides a client to server API for creating, updating and deleting content, as well as a federated server to server API for delivering notifications and content.]]></description>
+	<guid>5ff8ef81-dd28-4bdd-96ee-43310f677e72</guid>
+	<copyright>2018</copyright>
+</pluggable>
