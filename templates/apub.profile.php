@@ -16,13 +16,21 @@
         "inbox": "<?php URL::out( 'v1_usernameinbox', array('username' => $profile->username) ); ?>",
         "outbox": "<?php URL::out( 'v1_usernamefeed', array('username' => $profile->username) ); ?>",
         "preferredUsername": "<?php echo $profile->username; ?>",
+        "manuallyApprovesFollowers": "false",
         "displayName": "<?php echo $profile->info->displayname; ?>",
         "summary": "<?php echo $profile->info->apub_summary; ?>",
-        "icon": [
-          "https://avatars.io/twitter/<?php echo $profile->username; ?>"
-        ]
+		"icon": {
+			"type": "Image",
+			"mediaType": "image/jpeg",
+			"url": "https://avatars.io/twitter/<?php echo $profile->username; ?>"
+		},
+		"image": {
+			"type": "Image",
+			"mediaType": "image/jpeg",
+			"url": "<?php URL::out( 'display_apub_profile', array('username' => $profile->username) ); ?>/header.jpg"
+		}
       }
-    </script>
+    </script>	
   </head>
   <body>
 	  <?php if( aPub::is_following( $user, $profile ) ) { ?>

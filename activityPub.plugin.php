@@ -172,6 +172,13 @@ class aPub extends Plugin
 		
 		$json = $this->create_payload( self::ACTION_FOLLOW, $actor, $to, true );
 		
+		$vars = array(
+                'Content-Type' => 'application/ld+json',
+                'Accept' => 'application/ld+json',
+			);
+		
+		$req->add_header( $vars );
+		
 		$req->set_params( array('payload' => $json) );
 		$req->execute();
 		
