@@ -10,7 +10,8 @@ class aPub extends Plugin
 	const ACTION_UNFOLLOW = 2;
 	const ACTION_BLOCK = 3;
 	const ACTION_LIKE = 4;
-	const ACTION_NOTE = 5;
+	const ACTION_POST = 5;
+	const ACTION_NOTE = 6;
 		
 	public function filter_autoload_dirs($dirs) {
 		$dirs[] = __DIR__ . '/classes';
@@ -122,6 +123,62 @@ class aPub extends Plugin
 	private function save_to_file($data) {
 		file_put_contents( __DIR__ . '/logs/test.txt', print_r($data, true) );
 	}
+	
+	private function create_payload($type, $actor, $to, $public = true) {	
+		$data = [];
+		$data['@context'] = "http://www.w3.org/ns/activitystreams";
+		
+		switch( $type ) {
+			case self::ACTION_FOLLOW :
+				$data['@type'] = "Follow";
+				$data['object'] = array( "@type" => "Person", "@id" => URL::get( "display_apub_profile", array("username" => $to->username)) );
+				$data['to'] = array( array("@type" => "Person", "@id" => URL::get( "display_apub_profile", array("username" => $to->username))) );
+			break;
+			case ACTION_UNFOLLOW :
+				$data['@type'] = "Unfollow";
+				$data['object'] = array( "@type" => "Person", "@id" => URL::get( "display_apub_profile", array("username" => $to->username)) );
+				$data['to'] = array( array("@type" => "Person", "@id" => URL::get( "display_apub_profile", array("username" => $to->username))) );
+			break;
+			case ACTION_BLOCK :
+			break;
+			case ACTION_LIKE :
+			break;
+			case ACTION_POST :
+				$data['@type'] = "Post";
+			break;			
+			case ACTION_NOTE :
+			break;
+		}
+		
+		$data['actor'] = array( "@type" => "Person", "@id" => URL::get( "display_apub_profile", array("username" => $actor->username) ), "displayName" => $actor->info->displayname );
+		
+		if( $public == true ) {
+			$data['cc'] = array( array( "@context" => "http://www.w3.org/ns/activitystreams", "@id" => "http://activityschema.org/collection/public", "@type" => "Collection") );
+		}
+		
+		return json_encode($data );
+	}
+	
+	/**
+	 * follow
+	 * 
+	 * @access private
+	 * @param string $actor
+	 * @param string $to_url
+	 * @example $this->follow( 1, https://example.com/v1/veronica/inbox );
+	 */
+	private function follow($actor, $to) {
+		$req = new RemoteRequest( URL::get( 'v1_usernamefeed', array('username' => $actor->username) ), 'POST' );
+		
+		$json = $this->create_payload( self::ACTION_FOLLOW, $actor, $to, true );
+		
+		$req->set_params( array('payload' => $json) );
+		$req->execute();
+		
+		$response = $req->get_response_body();
+		
+		var_dump( $response ); exit();
+	}
 
 	/**
 	 * rest_get_v1__username_following
@@ -153,6 +210,8 @@ class aPub extends Plugin
 	 */
 	public function rest_post_v1__username_feed($params) {
 		$person = User::get_by_name( $params['username'] ); $i = 0;
+		
+		$json = html_entity_decode( $_GET['payload'] );
 		
 		$ins = self::insert( array('raw_json' => $json, 'executed' => 0, 'user_id' => $person->id), DB::table('outbox') );
 		
@@ -208,7 +267,7 @@ class aPub extends Plugin
 		$payload = html_entity_decode( $_GET['payload'] );
 		$decoded = json_decode( $payload );
 		
-		$this->save_to_file( $decoded );
+		$this->save_to_file( $payload );
 		
 		$ins = self::insert( array('raw_json' => $payload , 'executed' => 0, 'user_id' => $person->id), DB::table('inbox') );
 		
@@ -216,6 +275,7 @@ class aPub extends Plugin
 		
 		switch( $args->{'@type'} ) {
 			case 'Follow' :
+				
 			break;
 		}
 	}
@@ -250,10 +310,53 @@ class aPub extends Plugin
 	 */
 	public function rest_post_v1__username_liked($params) {}
 	
+	/**
+	 * theme_route_display_apub_profile
+	 * 
+	 * @access public
+	 * @param mixed array $theme
+	 * @param mixed array $params
+	 * @return null
+	 */
 	public function theme_route_display_apub_profile($theme, $params) {
 		$theme->profile = User::get_by_name( $params['username'] );
 		
 		$theme->display( 'apub.profile' );
+	}
+	
+	public function action_auth_ajax_follow() {
+		$vars = $_POST; $user = User::identify(); $to = User::get_by_id( $vars['user_id'] );
+		
+		try {
+			$this->follow( $user, $to );
+			$ar = new AjaxResponse( 200, 'Follow Successful', '' );
+			$ar->html( '#follow_form', '#' );
+		} catch( Exception $e ) {
+			$ar = new AjaxResponse( 500, 'Follow Unsuccessful', '' );
+		}
+		
+		$ar->out();
+	}
+	
+    public function action_auth_ajax_verify($data) {
+		if( isset($_GET['nonce']) ) {
+			$vars = $_GET;
+		} else {
+			$vars = $_POST;
+		}
+		
+		if( !$verified = Utils::verify_wsse($vars) ) {
+			die('{error: "WSSE Failure"}');
+		}
+    }
+	
+	public function action_auth_ajax_wsse_update() {
+		$ar = new AjaxResponse(200, null, Utils::WSSE());
+		$ar->out();
+	}
+	
+	public static function is_following($actor, $to) {
+		return false;
 	}
 }
 

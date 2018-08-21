@@ -25,6 +25,15 @@
     </script>
   </head>
   <body>
-    <!-- Content goes here! -->
+	  <?php if( aPub::is_following( $user, $profile ) ) { ?>
+	  <form id="follow_form" method="post" action="<?php URL::out( 'auth_ajax', Utils::WSSE( array('context' => 'unfollow')) ); ?>">
+		  <input type="hidden" name="user_id" value="<?php echo $profile->id; ?>">
+		  <button>Stop Following <?php echo $profile->info->displayname; ?></button>
+	  <?php } else { ?>
+	  <form id="follow_form" method="post" action="<?php URL::out( 'auth_ajax', Utils::WSSE( array('context' => 'follow')) ); ?>">
+		  <input type="hidden" name="user_id" value="<?php echo $profile->id; ?>">
+		  <button>Follow <?php echo $profile->info->displayname; ?></button>		  		  
+	  <?php } ?>
+	  </form>
   </body>
 </html>
